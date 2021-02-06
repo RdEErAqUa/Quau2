@@ -19,7 +19,6 @@ QSampleItemModel::QSampleItemModel(QObject *parent)
 
 QModelIndex QSampleItemModel::index(int row, int column, const QModelIndex &parent) const
 {
-    std::cout << "index" << std::endl;
     if (!hasIndex(row, column, parent))
             return QModelIndex();
 
@@ -32,7 +31,6 @@ QModelIndex QSampleItemModel::index(int row, int column, const QModelIndex &pare
 
 QModelIndex QSampleItemModel::parent(const QModelIndex &index) const
 {
-    std::cout << "parent" << std::endl;
     if (!index.isValid())
             return QModelIndex();
 
@@ -61,13 +59,11 @@ int QSampleItemModel::rowCount(const QModelIndex &parent) const
 
 int QSampleItemModel::columnCount(const QModelIndex &parent) const
 {
-    std::cout << "column" << std::endl;
     return 3;
 }
 
 QVariant QSampleItemModel::data(const QModelIndex &index, int role) const
 {
-    std::cout << "data" << std::endl;
     if (!index.isValid())
             return QVariant();
         if (role != Qt::DisplayRole)
