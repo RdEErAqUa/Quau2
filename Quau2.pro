@@ -1,4 +1,6 @@
 QT       += core gui
+
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 
@@ -11,18 +13,42 @@ CONFIG += c++11
 
 SOURCES += \
     Data/Group/group.cpp \
+    Data/basesampletree.cpp \
+    Data/distribution.cpp \
+    Data/division.cpp \
+    Data/linearregression.cpp \
     Data/parameter.cpp \
     Data/sample.cpp \
+    Data/twodimdivision.cpp \
+    Data/twodimparameter.cpp \
+    Data/twodimsample.cpp \
+    Data/xmultipley.cpp \
+    Delegate/qcomboboxdelegate.cpp \
+    Models/Sample/qparameteritemmodel.cpp \
     Models/Sample/qsampleitemmodel.cpp \
+    QListUseful.cpp \
+    Quantile.cpp \
+    StreamWork.cpp \
+    Variation.cpp \
+    XY.cpp \
     main.cpp \
     mainwindow.cpp \
     qcustomplot.cpp
 
 HEADERS += \
     Data/Group/group.h \
+    Data/basesampletree.h \
+    Data/distribution.h \
     Data/division.h \
+    Data/linearregression.h \
     Data/parameter.h \
     Data/sample.h \
+    Data/twodimdivision.h \
+    Data/twodimparameter.h \
+    Data/twodimsample.h \
+    Data/xmultipley.h \
+    Delegate/qcomboboxdelegate.h \
+    Models/Sample/qparameteritemmodel.h \
     Models/Sample/qsampleitemmodel.h \
     QListUseful.h \
     Quantile.h \

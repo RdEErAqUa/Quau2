@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "Models/Sample/qsampleitemmodel.h"
+#include "Models/Sample/qparameteritemmodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,8 +22,17 @@ private slots:
 
     void on_actionAddSample_triggered();
 
+    void on_treeView_clicked(const QModelIndex &index);
+
+    void on_actionAddTwoDimSample_triggered();
+
+    void on_actionLinearRegressionTeylor_triggered();
+
+    void on_actionLinearRegressionMNK_triggered();
+
 private:
     Ui::MainWindow *ui;
-    QSampleItemModel *sampleModel;
+    QParameterItemModel *parameter;
+    QSampleItemModel *sample_model;
 };
 #endif // MAINWINDOW_H

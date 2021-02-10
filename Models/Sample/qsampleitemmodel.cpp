@@ -4,16 +4,6 @@
 QSampleItemModel::QSampleItemModel(QObject *parent)
     : QAbstractItemModel(parent)
 {
-    Group *first = new Group();
-    first->NameSet("data1");
-    QList<double> fr = {1.3, 2.0, 3.1};
-    Sample *sample = new Sample("hello", fr);
-    first->SampleAdd(*sample);
-
-    QList<double> fr2 = {1.3, 2.0, 3.1};
-    Sample *sample2 = new Sample("hello", fr2);
-    first->SampleAdd(*sample2);
-    groups.append(first);
 }
 
 
@@ -24,9 +14,7 @@ QModelIndex QSampleItemModel::index(int row, int column, const QModelIndex &pare
 
         if (!parent.isValid())
             return createIndex(row, column, groups[row]);
-        if (Group * g = static_cast<Group *>(parent.internalPointer()))
-            return createIndex(row, column, &g->SampleGet(row));
-        return QModelIndex();
+        return createIndex(row, column, static_cast<BaseSampleTree*>(parent.internalPointer())->GetChild(row));
 }
 
 QModelIndex QSampleItemModel::parent(const QModelIndex &index) const
@@ -35,13 +23,17 @@ QModelIndex QSampleItemModel::parent(const QModelIndex &index) const
             return QModelIndex();
 
         void * p = index.internalPointer();
-
         for (int i = 0; i < groups.count(); ++i)
         {
             if (p == &groups[i]) return QModelIndex();
-            for (int j = 0; j < groups[i]->SampleCount(); j++)
+            for (int j = 0; j < groups[i]->RowSize(); j++)
             {
-                if (p == &groups[i]->SampleGet(j)) return createIndex(i, 0, groups[i]);
+                if (j < groups[i]->SampleCount() && p == &groups[i]->SampleGet(j)) return createIndex(i, 0, groups[i]);
+                if (j >= groups[i]->SampleCount() && p == &groups[i]->TwoSampleGet(j - groups[i]->SampleCount())) return createIndex(i, 0, groups[i]);
+            }
+            for (int j = 0; j < groups[i]->TwoSampleCount(); j++)
+            {
+                if(p == &groups[i]->TwoSampleGet(j).first || p == &groups[i]->TwoSampleGet(j).second) return createIndex(i, 0, &groups[i]->TwoSampleGet(j));
             }
         }
 
@@ -50,11 +42,11 @@ QModelIndex QSampleItemModel::parent(const QModelIndex &index) const
 
 int QSampleItemModel::rowCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
+    if(parent.column() > 0)
+        return 0;
+    else if (!parent.isValid())
             return groups.count();
-        else if (Group * g = static_cast<Group *>(parent.internalPointer()))
-            return g->SampleCount();
-    return 0;
+    return static_cast<BaseSampleTree*>(parent.internalPointer())->RowSize();
 }
 
 int QSampleItemModel::columnCount(const QModelIndex &parent) const
@@ -66,19 +58,119 @@ QVariant QSampleItemModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
             return QVariant();
-        if (role != Qt::DisplayRole)
+        switch(role){
+        case Qt::DisplayRole:
+            {
+                if(index.column() == 0)
+                    return static_cast<BaseSampleTree*>(index.internalPointer())->GetName();
+                if(index.column() == 1)
+                    return static_cast<BaseSampleTree*>(index.internalPointer())->ShowInfo(0);
+                if(index.column() == 2)
+                    return static_cast<BaseSampleTree*>(index.internalPointer())->ShowInfo(1);
+            }
+        case Qt::EditRole:
+            if(index.column() == 1)
+                return static_cast<BaseSampleTree*>(index.internalPointer())->ShowInfo(0);
+        default:
             return QVariant();
-
-        if (!index.parent().isValid())
-            return static_cast<Group *>(index.internalPointer())->NameGet();
-
-        return static_cast<Sample *>(index.internalPointer())->name;
+        }
+}
+/*
+ * Вся модель построенная на принципе что если в группе i есть n одномерных выборок и m двомерных, то ВСЕГДА
+ * row от 0 до n - это строчки ОДНОМЕРНЫХ ВЫБОРОК, а row от n(включительно) до n + m - это строчки ДВОМЕРНЫХ ВЫБОРОК
+ * В добавлении сдвиг не предусматривается, и по-этому программа неправильно идентеицирует такие выборки при добавлении
+ * В будущем нужно добавить сдвиг в добавлении, чтобы не возникло проблем при удалении выборки(или нет. 08.02.2020 моих знаний не хватало, чтобы дать на
+ * это 100% ответ, может модели в qt умнее и умеют сами такой сдвиг определять)
+ */
+void QSampleItemModel::addItemSample(Sample *sample, const QModelIndex &parentId)
+{
+    QModelIndex indexValue;
+    if(!parentId.isValid()){
+        if(!(groups.size() > 0)){
+            Group *group = new Group();
+            group->NameSet("data1");
+            addItemGroup(group, QModelIndex());
+        }
+        indexValue = index(0, 0, parentId);
+    }
+    else indexValue = parentId;
+    beginInsertRows(indexValue, rowCount(indexValue), rowCount(indexValue));
+    groups[indexValue.row()]->SampleAdd(*sample);
+    endInsertRows();
 }
 
-void QSampleItemModel::addItem(Sample *sample, const QModelIndex &parentId)
+void QSampleItemModel::addItemTwoDimSample(TwoDimSample *twoDimSample, const QModelIndex &parentId)
 {
-    beginInsertRows(parentId, rowCount(parentId), rowCount(parentId));
-    if(!parentId.isValid()) groups[0]->SampleAdd(*sample);
-    static_cast<Group *>(parentId.internalPointer())->SampleAdd(*sample);
+    QModelIndex indexValue;
+    if(!parentId.isValid()){
+        if(!(groups.size() > 0)){
+            Group *group = new Group();
+            group->NameSet("data1");
+            addItemGroup(group, QModelIndex());
+        }
+        indexValue = index(0, 0, parentId);
+    }
+    else indexValue = parentId;
+    beginInsertRows(indexValue, rowCount(indexValue), rowCount(indexValue));
+    groups[indexValue.row()]->TwoSampleAdd(*twoDimSample);
     endInsertRows();
+}
+
+bool QSampleItemModel::addItemGroup(Group *group, const QModelIndex &parentId)
+{
+    if(parentId.isValid()) return false;
+    beginInsertColumns(parentId, rowCount(parentId), rowCount(parentId));
+    groups.append(group);
+    endInsertRows();
+    return true;
+}
+
+Qt::ItemFlags QSampleItemModel::flags(const QModelIndex &index) const
+{
+    if(!index.isValid())
+        return Qt::NoItemFlags;
+    if(static_cast<BaseSampleTree*>(index.internalPointer())->GetSampleType() == 0 && (index.column() > 0))
+        return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+}
+
+bool QSampleItemModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    switch(role)
+    {
+        case Qt::EditRole:
+            if(static_cast<BaseSampleTree*>(index.internalPointer())->GetSampleType() == 0 && index.column() == 1){
+                if(static_cast<BaseSampleTree*>(index.parent().internalPointer())->GetSampleType() == 1){
+                    TwoDimSample* twoDimSample = static_cast<TwoDimSample*>(index.parent().internalPointer());
+                    if(index.internalPointer() == &twoDimSample->first)
+                        twoDimSample->TwoDimAnalysis(value.toDouble(), twoDimSample->second.class_size);
+                    else
+                        twoDimSample->TwoDimAnalysis(twoDimSample->first.class_size, value.toDouble());
+                }
+                else{
+                    static_cast<Sample*>(index.internalPointer())->PrimaryAnalysis(value.toDouble());
+                }
+                return true;
+
+            }
+    }
+    return false;
+}
+
+QVariant QSampleItemModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if(role != Qt::DisplayRole)
+        return QVariant();
+    if(orientation == Qt::Horizontal){
+        if(section == 0)
+            return "Data";
+        else if(section == 1)
+            return "ClassSize";
+        else if(section == 2)
+            return "Distribution";
+    }
+    else{
+        return QVariant();
+    }
+    return QVariant();
 }

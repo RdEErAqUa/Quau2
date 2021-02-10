@@ -91,6 +91,106 @@
         <property name="styleSheet">
          <string notr="true">border-bottom: 1px solid grey</string>
         </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QTabWidget" name="tabWidget_2">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <property name="tabsClosable">
+            <bool>false</bool>
+           </property>
+           <widget class="QWidget" name="tab_3">
+            <attribute name="title">
+             <string>График1</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QCustomPlot" name="FirstPlot" native="true">
+               <property name="contextMenuPolicy">
+                <enum>Qt::ActionsContextMenu</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_4">
+            <attribute name="title">
+             <string>График2</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QCustomPlot" name="SecondPlot" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_5">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <attribute name="title">
+             <string>График3</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QCustomPlot" name="ThirdPlot" native="true"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
        </widget>
        <widget class="QTabWidget" name="tabWidget">
         <property name="minimumSize">
@@ -210,6 +310,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionAddSample"/>
+   <addaction name="actionAddTwoDimSample"/>
   </widget>
   <action name="actionAddSample">
    <property name="icon">
@@ -220,7 +321,34 @@
     <string>Додати одновимірну вибірку</string>
    </property>
   </action>
+  <action name="actionAddTwoDimSample">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/img/toolBar/file_add.png</normaloff>:/new/img/toolBar/file_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Додати двомірну вибірку</string>
+   </property>
+  </action>
+  <action name="actionLinearRegressionMNK">
+   <property name="text">
+    <string>Лінійна регресія МНК</string>
+   </property>
+  </action>
+  <action name="actionLinearRegressionTeylor">
+   <property name="text">
+    <string>Лінійна регресія Тейлора</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resource.qrc"/>
  </resources>

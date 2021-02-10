@@ -4,104 +4,50 @@
 #include <QString>
 #include "QListUseful.h"
 #include <cmath>
+#include "Quantile.h"
 
-struct Parameter
+class Parameter
 {
+public:
     QString name;
     double value;
     double dispersion;
-    double rootMeanSquare;
-    double maxValue;
-    double minValue;
+    double max_value;
+    double min_value;
 
-    Parameter(const QString &name,const double &value,const double dispersion = 0,const double rootMeanSquare = 0,const double maxValue = 0,const double minValue = 0);
+    Parameter(const QString &name,const double &value, const double rootMeanSquare = 0,const double maxValue = 0,const double minValue = 0);
 
-    static double InitialStaticMoment(const QList<double> &value,const int &power){
-        double returnValue = 0;
-        for(double v : value){
-            returnValue += pow(v, power);
-        }
-        return returnValue/value.size();
-    }
-    static double CentralMoment(const QList<double> &value,const int &power)
-    {
-        double initialStaticMoment = Parameter::InitialStaticMoment(value, 1);
+    static double InitialStaticMoment(const QList<double> &value,const int &power);
+    static double CentralMoment(const QList<double> &value,const int &power);
+    static double Average(const QList<double> &value);
+    static double Dispersion(const QList<double> &value);
+    static double DispersionUnshifted(const QList<double> &value);
+    static double Skewness(const QList<double> &value);
+    static double SkewnessUnShifted(const QList<double> &value);
+    static double Kurtosis(const QList<double> &value);
+    static double KurtosisUnshifted(const QList<double> &value);
+    static double CounterKurtosis(const QList<double> &value);
+    static double MAD(const QList<double> &value);
+    static double MED(const QList<double> &value);
+    static double PearsonVariation(const QList<double> &value);
 
-        double returnValue = 0;
-        for(double v : value){
-            returnValue += pow(v - initialStaticMoment, power);
-        }
-        return returnValue/value.size();
-    }
-    static double Average(const QList<double> &value){
-        double returnValue = 0;
-        for(double v : value){
-            returnValue += v;
-        }
-        return returnValue/value.size();
-    }
-    static double Dispersion(const QList<double> &value)
-    {
-        return sqrt(Parameter::CentralMoment(value, 2));
-    }
-    static double DispersionUnshifted(const QList<double> &value){
-        double initialStaticMoment = Parameter::InitialStaticMoment(value, 1);
-        double returnValue = 0;
-        for(double v : value){
-            returnValue += pow(v - initialStaticMoment, 2);
-        }
-        return sqrt(returnValue/(value.size() - 1.0));
-    }
-    static double Skewness(const QList<double> &value)
-    {
-        return Parameter::CentralMoment(value, 2);
-    }
-    static double SkewnessUnShifted(const QList<double> &value)
-    {
-        int size = value.size();
-        return sqrt(size * (size - 1.0)) / (size - 2.0) * Parameter::Skewness(value);
-    }
-    static double Kurtosis(const QList<double> &value)
-    {
-        return Parameter::CentralMoment(value, 4) / pow(Parameter::CentralMoment(value, 2), 2.0);
-    }
-    static double KurtosisUnshifted(const QList<double> &value)
-    {
-        int size = value.size();
-        return ((pow(size, 2.0) - 1.0) / ((size - 2.0) * (size - 3.0)) *
-                            ((Parameter::Kurtosis(value) - 3.0) + 6.0 / (size + 1.0)));
-    }
-    static double CounterKurtosis(const QList<double> &value)
-    {
-        return 1.0 / sqrt(abs(Parameter::KurtosisUnshifted(value)));
-    }
-    static double MAD(const QList<double> &value)
-    {
-        return (1.483 * Parameter::MED(value));
-    }
-    static double MED(const QList<double> &value)
-    {
-        int size = value.size();
-        if (size % 2 == 0)
-        {
-            int k = size;
-            k /= 2;
-            double MED = value[k] + value[k + 1];
-            MED /= 2;
-            return MED;
-        }
-        else
-        {
-            int k = size - 1;
-            k /= 2;
-            double MED = value[k + 1];
-            return MED;
-        }
-    }
-    static double PearsonVariation(const QList<double> &value)
-    {
-        return Parameter::Dispersion(value) / Parameter::Average(value);
-    }
+    static double DispersionAverage(const QList<double> &value);
+    static Parameter *buildAverage(const QList<double> &value, const double &quantile);
+    static double DispersionDispersion(const QList<double> &value);
+    static Parameter *buildDispersion(const QList<double> &value, const double &quantile);
+    static Parameter *buildDispersionUnshifted(const QList<double> &value);
+    static double DispersionSkewness(const QList<double> &value);
+    static Parameter *buildSkewness(const QList<double> &value, const double &quantile);
+    static Parameter *buildSkewnessUnShifted(const QList<double> &value);
+    static Parameter *buildKurtosis(const QList<double> &value);
+    static Parameter *buildKurtosisUnshifted(const QList<double> &value);
+    static Parameter *buildCounterKurtosis(const QList<double> &value);
+    static Parameter *buildMAD(const QList<double> &value);
+    static Parameter *buildMED(const QList<double> &value);
+    static Parameter *buildPearsonVariation(const QList<double> &value);
+
+    static QList<Parameter*> buildParameters(const QList<double> &value ,const double &quantile);
+
 
 };
 

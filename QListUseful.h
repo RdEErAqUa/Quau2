@@ -3,31 +3,12 @@
 
 #include <QList>
 
-struct QListUseful
+class QListUseful
 {
-    static QList<double> Unique(QList<double> &sample)
-    {
-        QList<double> unique;
-        for(double el : sample)
-        {
-            if(!unique.contains(el))
-                unique << el;
-        }
-        return unique;
+public:
+    static QList<double> Unique(QList<double> &sample);
 
-    }
-
-    static QList<double> Average(QList<double> &sample)
-    {
-        QList<double> unique;
-        for(double el : sample)
-        {
-            if(!unique.contains(el))
-                unique << el;
-        }
-        return unique;
-
-    }
+    static QList<double> Average(QList<double> &sample);
 };
 
 #endif // QLISTUSEFUL_H
