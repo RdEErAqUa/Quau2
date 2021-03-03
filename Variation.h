@@ -4,7 +4,7 @@
 #include "Data/sample.h"
 #include "QListUseful.h"
 
-class Sample;
+class TwoDimSample;
 class Variation
 {
 public:

@@ -11,6 +11,8 @@ public:
     static double XiQUnatile(const double &a, const double &v1);
 
     static double FQuantile(const double &a, const double &v1, const double &v2);
+
+    static double AValue(const int &size);
 };
 
 #endif // QUANTILE_H

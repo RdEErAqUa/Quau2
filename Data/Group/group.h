@@ -1,31 +1,29 @@
 #ifndef GROUP_H
 #define GROUP_H
-#include "Data/sample.h"
-#include "Data/twodimsample.h"
-
+#include "Data/Sample/OneDimSample/onedimsample.h"
+#include "Data/Sample/TwoDimSample/twodimsample.h"
 class Group : BaseSampleTree
 {
 public:
-    struct SampleInfo;
     Group();
 
-    void SampleAdd(Sample &sample);
-    bool SampleRemoveAt(const int &pos);
-    Sample &SampleGet(const int &pos);
-    int SampleCount();
+    void OneDimSampleAdd(OneDimSample &sample);
+    bool OneDimSampleRemoveAt(const int &pos);
+    OneDimSample &OneDimSampleGet(const int &pos);
+    int OneDimSampleCount();
 
-    void TwoSampleAdd(TwoDimSample &sample);
-    TwoDimSample &TwoSampleGet(const int &pos);
-    bool TwoSampleRemoveAt(const int &pos);
-    int TwoSampleCount();
+    void TwoDimSampleAdd(TwoDimSample &sample);
+    TwoDimSample &TwoDimSampleGet(const int &pos);
+    bool TwoDimSampleRemoveAt(const int &pos);
+    int TwoDimSampleCount();
 
     void NameSet(const QString &name);
 
 private:
     QString name;
-    QList<Sample*> samples;
+    QList<OneDimSample*> one_dim_samples;
     QList<TwoDimSample*> two_dim_samples;
-    int sample_count;
+    int one_dim_sample_count;
     int two_dim_sample_count;
 
     // BaseSampleTree interface

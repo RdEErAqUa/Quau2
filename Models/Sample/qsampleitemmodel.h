@@ -21,7 +21,7 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-    void addItemSample(Sample *sample, const QModelIndex &parentId);
+    void addItemOneDimSample(OneDimSample *sample, const QModelIndex &parentId);
     void addItemTwoDimSample(TwoDimSample *twoDimSample, const QModelIndex &parentId);
     bool addItemGroup(Group *group, const QModelIndex &parentId);
 

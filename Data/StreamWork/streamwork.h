@@ -17,3 +17,4 @@ public:
 };
 
 #endif // STREAMWORK_H
+

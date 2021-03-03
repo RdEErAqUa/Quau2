@@ -1,16 +1,15 @@
-#ifndef QPARAMETERITEMMODEL_H
-#define QPARAMETERITEMMODEL_H
+#ifndef QTWODIMPARAMETER_H
+#define QTWODIMPARAMETER_H
 
 #include <QAbstractItemModel>
-#include "Data/Sample/OneDimSample/onedimsample.h"
+#include "Data/Sample/TwoDimSample/twodimparameter.h"
 
-class QParameterItemModel : public QAbstractItemModel
+class QTwoDimParameter : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit QParameterItemModel(OneDimSample *sample,QObject *parent = nullptr);
-
+    explicit QTwoDimParameter(TwoDimSample *two_dim_sample,QObject *parent = nullptr);
 
     // Basic functionality:
     QModelIndex index(int row, int column,
@@ -23,7 +22,7 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
 private:
-    OneDimSample *sample;
+    TwoDimSample *two_dim_sample;
 };
 
-#endif // QPARAMETERITEMMODEL_H
+#endif // QTWODIMPARAMETER_H

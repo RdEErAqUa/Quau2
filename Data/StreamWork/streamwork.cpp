@@ -1,5 +1,4 @@
-#include "StreamWork.h"
-
+#include "streamwork.h"
 
 QString StreamWork::ReadString(const QString &FileName)
 {

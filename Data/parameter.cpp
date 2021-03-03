@@ -1,7 +1,7 @@
 #include "Data/parameter.h"
 
-Parameter::Parameter(const QString &name,const double &value,const double dispersion,const double maxValue,const double minValue)
-    : name(name), value(value), dispersion(dispersion), max_value(maxValue), min_value(minValue){}
+Parameter::Parameter(const QString name, const double value, const int data_size,const double dispersion,const double maxValue,const double minValue)
+    : name(name), value(value), data_size(data_size),dispersion(dispersion), max_value(maxValue), min_value(minValue){}
 
 double Parameter::InitialStaticMoment(const QList<double> &value, const int &power){
     double returnValue = 0;
@@ -109,7 +109,7 @@ double Parameter::DispersionAverage(const QList<double> &value){
 Parameter *Parameter::buildAverage(const QList<double> &value, const double &quantile){
     double dispersionAverage = Parameter::DispersionAverage(value);
     double average = Average(value);
-    return new Parameter("Average", average, dispersionAverage, average + quantile * dispersionAverage, average - quantile * dispersionAverage);
+    return new Parameter("Average",average, 4, dispersionAverage, average + quantile * dispersionAverage, average - quantile * dispersionAverage);
 }
 
 double Parameter::DispersionDispersion(const QList<double> &value)
@@ -120,11 +120,11 @@ double Parameter::DispersionDispersion(const QList<double> &value)
 Parameter *Parameter::buildDispersion(const QList<double> &value, const double &quantile){
     double dispersionDispersion = Parameter::DispersionDispersion(value);
     double dispersion = Dispersion(value);
-    return new Parameter("Dispersion", dispersion, dispersionDispersion, dispersion + quantile * dispersionDispersion, dispersion - quantile * dispersionDispersion);
+    return new Parameter("Dispersion", dispersion,4, dispersionDispersion, dispersion + quantile * dispersionDispersion, dispersion - quantile * dispersionDispersion);
 }
 
 Parameter *Parameter::buildDispersionUnshifted(const QList<double> &value){
-    return new Parameter("DispersionUnshifted", DispersionUnshifted(value));
+    return new Parameter("DispersionUnshifted", DispersionUnshifted(value), 1);
 }
 
 double Parameter::DispersionSkewness(const QList<double> &value)
@@ -135,36 +135,36 @@ double Parameter::DispersionSkewness(const QList<double> &value)
 Parameter *Parameter::buildSkewness(const QList<double> &value, const double &quantile){
     double dispersionSkewness = Parameter::DispersionSkewness(value);
     double skewness = Skewness(value);
-    return new Parameter("Skewness", skewness, dispersionSkewness, skewness + quantile * dispersionSkewness, skewness - quantile * dispersionSkewness);
+    return new Parameter("Skewness", skewness, 4,dispersionSkewness, skewness + quantile * dispersionSkewness, skewness - quantile * dispersionSkewness);
 
 }
 
 Parameter *Parameter::buildSkewnessUnShifted(const QList<double> &value){
-    return new Parameter("SkewnessUnshifted", SkewnessUnShifted(value));
+    return new Parameter("SkewnessUnshifted", SkewnessUnShifted(value), 1);
 }
 
 Parameter *Parameter::buildKurtosis(const QList<double> &value){
-    return new Parameter("Kurtosis", Kurtosis(value));
+    return new Parameter("Kurtosis", Kurtosis(value), 1);
 }
 
 Parameter *Parameter::buildKurtosisUnshifted(const QList<double> &value){
-    return new Parameter("KurtosisUnshifted", KurtosisUnshifted(value));
+    return new Parameter("KurtosisUnshifted", KurtosisUnshifted(value), 1);
 }
 
 Parameter *Parameter::buildCounterKurtosis(const QList<double> &value){
-    return new Parameter("CounterKurtosis", CounterKurtosis(value));
+    return new Parameter("CounterKurtosis", CounterKurtosis(value), 1);
 }
 
 Parameter *Parameter::buildMAD(const QList<double> &value){
-    return new Parameter("MAD", MAD(value));
+    return new Parameter("MAD", MAD(value), 1);
 }
 
 Parameter *Parameter::buildMED(const QList<double> &value){
-    return new Parameter("MED", MED(value));
+    return new Parameter("MED", MED(value), 1);
 }
 
 Parameter *Parameter::buildPearsonVariation(const QList<double> &value){
-    return new Parameter("PearsonVariation", PearsonVariation(value));
+    return new Parameter("PearsonVariation", PearsonVariation(value), 1);
 }
 
 QList<Parameter *> Parameter::buildParameters(const QList<double> &value, const double &quantile){

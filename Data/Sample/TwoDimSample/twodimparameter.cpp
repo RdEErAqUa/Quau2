@@ -1,10 +1,10 @@
-#include "Data/twodimparameter.h"
+#include "twodimparameter.h"
 
-TwoDimParameter::TwoDimParameter(const QString &name, const double &value, const double &t_value, const bool &is_significance, const double &min_value, const double &max_value):
-    name(name), value(value), t_value(t_value), is_significance(is_significance), min_value(min_value), max_value(max_value)
+TwoDimParameter::TwoDimParameter(const QString &name, const double &value, const double &t_value, const bool &is_significance, const double &min_value, const double &max_value, const double &t_quantile):
+    name(name), value(value), t_value(t_value), t_quantile(t_quantile),is_significance(is_significance), min_value(min_value), max_value(max_value)
 {}
 
-double TwoDimParameter::Average(const Sample &first,const  Sample &second){
+double TwoDimParameter::Average(const OneDimSample &first,const  OneDimSample &second){
     double value = 0;
     for(int i = 0; i < first.sample.size(); i++)
         value += first.sample[i] * second.sample[i];
@@ -17,7 +17,7 @@ TwoDimParameter *TwoDimParameter::buildAverage(const TwoDimSample &sample){
     return new TwoDimParameter("Average", average);
 }
 
-double TwoDimParameter::CorrelationCoefficient(const Sample &first,const  Sample &second){
+double TwoDimParameter::CorrelationCoefficient(const OneDimSample &first,const  OneDimSample &second){
     return first.sample.size() / (first.sample.size() - 1.0) * (Average(first, second) - first.GetParameter("Average") * second.GetParameter("Average"))
             / (first.GetParameter("Dispersion") * second.GetParameter("Dispersion"));
 }
@@ -29,7 +29,7 @@ TwoDimParameter *TwoDimParameter::buildCorrelationCoefficient(const TwoDimSample
     double coeffPlus = Quantile::UQuantile(0.05) * (1.0 - pow(coefficientCorrelation, 2.0)) / sqrt(sample.sample.size() - 1.0);
     double t_test = coefficientCorrelation * sqrt(sample.sample.size() - 2.0) / (1.0 - pow(coefficientCorrelation, 2.0));
     return new TwoDimParameter("CorrelationCoefficient", coefficientCorrelation, t_test, abs(t_test) > Quantile::TQuantile(0.1, sample.sample.size() - 2),
-                               coeff - coeffPlus, coeff + coeffPlus);
+                               coeff - coeffPlus, coeff + coeffPlus, Quantile::TQuantile(0.1, sample.sample.size() - 2));
 }
 
 double TwoDimParameter::CorrelationRatio(const QList<XMultipleY> &sample, const double &average_y){
@@ -59,14 +59,37 @@ TwoDimParameter *TwoDimParameter::buildCorrelationRatio(const TwoDimSample &samp
                         (1.0 - correlationRatio) * Quantile::FQuantile(0.05, v1, v2)) - (sample.splitted_sample.size() - 1.0) / sample.sample.size();
     double t_test = sqrt(correlationRatio) * sqrt(sample.sample.size() - 2.0) / (1.0 - correlationRatio);
     return new TwoDimParameter("CorrelationRatio", correlationRatio, t_test, abs(t_test) > Quantile::TQuantile(0.1, sample.sample.size() - 2),
-                               ratioMin, ratioMax);
+                               ratioMin, ratioMax, Quantile::TQuantile(0.1, sample.sample.size() - 2));
+}
+
+double TwoDimParameter::LinearDeterminationCoefficient(const double &correlation_coefficient)
+{
+    return pow(correlation_coefficient, 2.0) * 100;
+}
+
+TwoDimParameter *TwoDimParameter::buildLinearDeterminationCoefficient(const double &correlation_coefficient)
+{
+    return new TwoDimParameter("LinearDeterminationCoefficient", LinearDeterminationCoefficient(correlation_coefficient));
+}
+
+double TwoDimParameter::NonLinearDeterminationCoefficient(const double &correlation_ratio)
+{
+    return pow(correlation_ratio, 2.0) * 100;
+}
+
+TwoDimParameter *TwoDimParameter::buildNonLinearDeterminationCoefficient(const double &correlation_ratio)
+{
+    return new TwoDimParameter("NonLinearDeterminationCoefficient", NonLinearDeterminationCoefficient(correlation_ratio));
 }
 
 QList<TwoDimParameter *> TwoDimParameter::buildParameters(const TwoDimSample &sample){
     QList<TwoDimParameter*> *parameters = new QList<TwoDimParameter*>();
     parameters->append(buildAverage(sample));
     parameters->append(buildCorrelationCoefficient(sample));
-    if(!parameters->at(1)->is_significance)
+    if(!parameters->at(1)->is_significance){
         parameters->append(buildCorrelationRatio(sample));
+        parameters->append(buildNonLinearDeterminationCoefficient(parameters->at(2)->value));
+    }
+    parameters->append(buildLinearDeterminationCoefficient(parameters->at(1)->value));
     return *parameters;
 }

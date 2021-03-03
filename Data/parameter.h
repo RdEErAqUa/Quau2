@@ -11,11 +11,12 @@ class Parameter
 public:
     QString name;
     double value;
+    int data_size;
     double dispersion;
     double max_value;
     double min_value;
 
-    Parameter(const QString &name,const double &value, const double rootMeanSquare = 0,const double maxValue = 0,const double minValue = 0);
+    Parameter(const QString name,const double value, const int data_size, const double rootMeanSquare = 0,const double maxValue = 0,const double minValue = 0);
 
     static double InitialStaticMoment(const QList<double> &value,const int &power);
     static double CentralMoment(const QList<double> &value,const int &power);

@@ -37,3 +37,19 @@ double Quantile::FQuantile(const double &a, const double &v1, const double &v2)
              (9 * pow(u, 5) - 284 * pow(u, 3) - 1513 * u));
     return exp(2 * z);
 }
+
+double Quantile::AValue(const int &size)
+{
+    if(size < 30)
+        return 0.5;
+    if(size < 60)
+            return 0.3;
+    if(size < 100)
+        return 0.1;
+    if(size < 300)
+        return 0.05;
+    if(size < 1000)
+        return 0.01;
+    else
+        return 0.005;
+}

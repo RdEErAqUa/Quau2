@@ -1,5 +1,5 @@
 #include "qsampleitemmodel.h"
-#include "StreamWork.h"
+#include "Data/StreamWork/streamwork.h"
 
 QSampleItemModel::QSampleItemModel(QObject *parent)
     : QAbstractItemModel(parent)
@@ -28,12 +28,12 @@ QModelIndex QSampleItemModel::parent(const QModelIndex &index) const
             if (p == &groups[i]) return QModelIndex();
             for (int j = 0; j < groups[i]->RowSize(); j++)
             {
-                if (j < groups[i]->SampleCount() && p == &groups[i]->SampleGet(j)) return createIndex(i, 0, groups[i]);
-                if (j >= groups[i]->SampleCount() && p == &groups[i]->TwoSampleGet(j - groups[i]->SampleCount())) return createIndex(i, 0, groups[i]);
+                if (j < groups[i]->OneDimSampleCount() && p == &groups[i]->OneDimSampleGet(j)) return createIndex(i, 0, groups[i]);
+                if (j >= groups[i]->OneDimSampleCount() && p == &groups[i]->TwoDimSampleGet(j - groups[i]->OneDimSampleCount())) return createIndex(i, 0, groups[i]);
             }
-            for (int j = 0; j < groups[i]->TwoSampleCount(); j++)
+            for (int j = 0; j < groups[i]->TwoDimSampleCount(); j++)
             {
-                if(p == &groups[i]->TwoSampleGet(j).first || p == &groups[i]->TwoSampleGet(j).second) return createIndex(i, 0, &groups[i]->TwoSampleGet(j));
+                if(p == &groups[i]->TwoDimSampleGet(j).first || p == &groups[i]->TwoDimSampleGet(j).second) return createIndex(i, 0, &groups[i]->TwoDimSampleGet(j));
             }
         }
 
@@ -82,7 +82,7 @@ QVariant QSampleItemModel::data(const QModelIndex &index, int role) const
  * В будущем нужно добавить сдвиг в добавлении, чтобы не возникло проблем при удалении выборки(или нет. 08.02.2020 моих знаний не хватало, чтобы дать на
  * это 100% ответ, может модели в qt умнее и умеют сами такой сдвиг определять)
  */
-void QSampleItemModel::addItemSample(Sample *sample, const QModelIndex &parentId)
+void QSampleItemModel::addItemOneDimSample(OneDimSample *sample, const QModelIndex &parentId)
 {
     QModelIndex indexValue;
     if(!parentId.isValid()){
@@ -95,7 +95,7 @@ void QSampleItemModel::addItemSample(Sample *sample, const QModelIndex &parentId
     }
     else indexValue = parentId;
     beginInsertRows(indexValue, rowCount(indexValue), rowCount(indexValue));
-    groups[indexValue.row()]->SampleAdd(*sample);
+    groups[indexValue.row()]->OneDimSampleAdd(*sample);
     endInsertRows();
 }
 
@@ -112,7 +112,7 @@ void QSampleItemModel::addItemTwoDimSample(TwoDimSample *twoDimSample, const QMo
     }
     else indexValue = parentId;
     beginInsertRows(indexValue, rowCount(indexValue), rowCount(indexValue));
-    groups[indexValue.row()]->TwoSampleAdd(*twoDimSample);
+    groups[indexValue.row()]->TwoDimSampleAdd(*twoDimSample);
     endInsertRows();
 }
 
@@ -148,7 +148,7 @@ bool QSampleItemModel::setData(const QModelIndex &index, const QVariant &value, 
                         twoDimSample->TwoDimAnalysis(twoDimSample->first.class_size, value.toDouble());
                 }
                 else{
-                    static_cast<Sample*>(index.internalPointer())->PrimaryAnalysis(value.toDouble());
+                    static_cast<OneDimSample*>(index.internalPointer())->PrimaryAnalysis(value.toDouble());
                 }
                 return true;
 

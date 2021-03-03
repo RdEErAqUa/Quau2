@@ -2,7 +2,7 @@
 #define DIVISION_H
 #include "Data/sample.h"
 
-class Sample;
+class TwoDimSample;
 class Division
 {
 public:

@@ -1,7 +1,7 @@
 #ifndef TWODIMDIVISION_H
 #define TWODIMDIVISION_H
 
-#include "twodimsample.h"
+#include "Data/Sample/TwoDimSample/twodimsample.h"
 
 class TwoDimSample;
 class TwoDimDivision
