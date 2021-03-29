@@ -27,6 +27,8 @@ private slots:
     void on_treeView_clicked(const QModelIndex &index);
 
     void on_actionAddTwoDimSample_triggered();
+    void on_actionaddHigherDim_triggered();
+
 public slots:
     void AddRegression(int regression_value);
     void contextMenuRequest(QPoint pos);

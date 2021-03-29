@@ -23,7 +23,7 @@ QList<Parameter *> OneDimSample::SetParameter()
 
 double OneDimSample::GetParameter(const QString &name) const
 {
-    for(Parameter *param : parameter)
+    foreach(Parameter *param , parameter)
         if(param->name == name)
             return param->value;
 }

@@ -67,6 +67,34 @@ void MainWindow::on_actionAddTwoDimSample_triggered()
     sample_model->addItemTwoDimSample(s, QModelIndex());
 }
 
+void MainWindow::on_actionaddHigherDim_triggered()
+{
+    QList<double> value = StreamWork::ReadDouble(QFileDialog::getOpenFileName(this,
+                                                                              tr("Open File"), tr("Text files (*.txt)")));
+    int f_size = 4;
+    if(value.size() % f_size != 0) {
+        QMessageBox msgBox;
+        msgBox.setText("Багатовимірна вибірка не відповідає критерію");
+        msgBox.exec();
+        return;
+    }
+    QString name = "data1/higherDimSample/";
+    int f = sample_model->rowCount(sample_model->index(0, 0, QModelIndex()));
+    name.append(QString::number(f));
+    QList<QList<double>> valuez;
+
+    for(int i = 0; i < f_size; i++){
+        QList<double> x_valuez;
+        for(int j = 0; j < value.size() / f_size; j++){
+            x_valuez << value.at(j * f_size + i);
+        }
+        valuez << x_valuez;
+    }
+
+    HigherDimSample *s = new HigherDimSample(valuez);
+    sample_model->addItemHigherDimSample(s, QModelIndex());
+}
+
 void MainWindow::on_treeView_clicked(const QModelIndex &index)
 {
 

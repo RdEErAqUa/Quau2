@@ -331,6 +331,7 @@
    </attribute>
    <addaction name="actionAddSample"/>
    <addaction name="actionAddTwoDimSample"/>
+   <addaction name="actionaddHigherDim"/>
   </widget>
   <action name="actionAddSample">
    <property name="icon">
@@ -348,6 +349,15 @@
    </property>
    <property name="text">
     <string>Додати двомірну вибірку</string>
+   </property>
+  </action>
+  <action name="actionaddHigherDim">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/img/toolBar/file_add.png</normaloff>:/new/img/toolBar/file_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>addHigherDim</string>
    </property>
   </action>
  </widget>

@@ -29,11 +29,17 @@ QModelIndex QSampleItemModel::parent(const QModelIndex &index) const
             for (int j = 0; j < groups[i]->RowSize(); j++)
             {
                 if (j < groups[i]->OneDimSampleCount() && p == &groups[i]->OneDimSampleGet(j)) return createIndex(i, 0, groups[i]);
-                if (j >= groups[i]->OneDimSampleCount() && p == &groups[i]->TwoDimSampleGet(j - groups[i]->OneDimSampleCount())) return createIndex(i, 0, groups[i]);
+                if (j >= groups[i]->OneDimSampleCount() && j < groups[i]->TwoDimSampleCount() && p == &groups[i]->TwoDimSampleGet(j - groups[i]->OneDimSampleCount())) return createIndex(i, 0, groups[i]);
+                if (j >= groups[i]->TwoDimSampleCount() && j >= groups[i]->OneDimSampleCount() && p == &groups[i]->HigherDimSampleGet(j - groups[i]->OneDimSampleCount() - groups[i]->TwoDimSampleCount())) return createIndex(i, 0, groups[i]);
             }
             for (int j = 0; j < groups[i]->TwoDimSampleCount(); j++)
             {
                 if(p == &groups[i]->TwoDimSampleGet(j).first || p == &groups[i]->TwoDimSampleGet(j).second) return createIndex(i, 0, &groups[i]->TwoDimSampleGet(j));
+            }
+            for(int j = 0; j < groups[i]->HigherDimSampleCount(); j++){
+                for(int f = 0; f < groups[i]->HigherDimSampleGet(j).one_dim_samples.size(); f++){
+                    if(p == groups[i]->HigherDimSampleGet(j).one_dim_samples[f]) return createIndex(i, 0, &groups[i]->HigherDimSampleGet(j));
+                }
             }
         }
 
@@ -113,6 +119,23 @@ void QSampleItemModel::addItemTwoDimSample(TwoDimSample *twoDimSample, const QMo
     else indexValue = parentId;
     beginInsertRows(indexValue, rowCount(indexValue), rowCount(indexValue));
     groups[indexValue.row()]->TwoDimSampleAdd(*twoDimSample);
+    endInsertRows();
+}
+
+void QSampleItemModel::addItemHigherDimSample(HigherDimSample *higherDimSample, const QModelIndex &parentId)
+{
+    QModelIndex indexValue;
+    if(!parentId.isValid()){
+        if(!(groups.size() > 0)){
+            Group *group = new Group();
+            group->NameSet("data1");
+            addItemGroup(group, QModelIndex());
+        }
+        indexValue = index(0, 0, parentId);
+    }
+    else indexValue = parentId;
+    beginInsertRows(indexValue, rowCount(indexValue), rowCount(indexValue));
+    groups[indexValue.row()]->HigherDimSampleAdd(*higherDimSample);
     endInsertRows();
 }
 

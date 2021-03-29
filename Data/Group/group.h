@@ -2,6 +2,7 @@
 #define GROUP_H
 #include "Data/Sample/OneDimSample/onedimsample.h"
 #include "Data/Sample/TwoDimSample/twodimsample.h"
+#include "Data/Sample/HigherDimSample/higherdimsample.h"
 class Group : BaseSampleTree
 {
 public:
@@ -17,14 +18,21 @@ public:
     bool TwoDimSampleRemoveAt(const int &pos);
     int TwoDimSampleCount();
 
+    void HigherDimSampleAdd(HigherDimSample &sample);
+    HigherDimSample &HigherDimSampleGet(const int &pos);
+    bool HigherDimSampleRemoveAt(const int &pos);
+    int HigherDimSampleCount();
+
     void NameSet(const QString &name);
 
 private:
     QString name;
     QList<OneDimSample*> one_dim_samples;
     QList<TwoDimSample*> two_dim_samples;
+    QList<HigherDimSample*> higher_dim_samples;
     int one_dim_sample_count;
     int two_dim_sample_count;
+    int higher_dim_sample_count;
 
     // BaseSampleTree interface
 public:

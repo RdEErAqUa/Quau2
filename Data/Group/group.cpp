@@ -1,6 +1,6 @@
 #include "Data/Group/group.h"
 
-Group::Group() : one_dim_sample_count(0), two_dim_sample_count(0)
+Group::Group() : one_dim_sample_count(0), two_dim_sample_count(0), higher_dim_sample_count(0)
 {
 }
 
@@ -48,6 +48,29 @@ int Group::TwoDimSampleCount()
 {
     return two_dim_sample_count;
 }
+
+void Group::HigherDimSampleAdd(HigherDimSample &sample)
+{
+    higher_dim_samples << &sample;
+    higher_dim_sample_count++;
+}
+
+HigherDimSample &Group::HigherDimSampleGet(const int &pos)
+{
+    return *higher_dim_samples.at(pos);
+}
+
+bool Group::HigherDimSampleRemoveAt(const int &pos)
+{
+    if(!(higher_dim_samples.size() > pos)) return false;
+    higher_dim_samples.removeAt(pos);
+    return true;
+}
+
+int Group::HigherDimSampleCount()
+{
+    return higher_dim_sample_count;
+}
 void Group::NameSet(const QString &name){
     this->name = name;
 }
@@ -64,11 +87,13 @@ const QString Group::GetName() const
 
 int Group::RowSize() const
 {
-    return one_dim_sample_count + two_dim_sample_count;
+    return one_dim_sample_count + two_dim_sample_count + higher_dim_sample_count;
 }
 
 void *Group::GetChild(const int &childId)
 {
+    if(childId >= two_dim_samples.size() && childId >= one_dim_sample_count)
+        return higher_dim_samples.at(childId - one_dim_samples.size() - two_dim_samples.size());
     if(childId >= one_dim_samples.size())
         return two_dim_samples.at(childId - one_dim_samples.size());
     else

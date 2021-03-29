@@ -23,6 +23,7 @@ public:
 
     void addItemOneDimSample(OneDimSample *sample, const QModelIndex &parentId);
     void addItemTwoDimSample(TwoDimSample *twoDimSample, const QModelIndex &parentId);
+    void addItemHigherDimSample(HigherDimSample *higherDimSample, const QModelIndex &parentId);
     bool addItemGroup(Group *group, const QModelIndex &parentId);
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
